@@ -1,4 +1,4 @@
-# 0.4: New note diagram
+# New note diagram `0.4`
 Here is what happens when a user creates a new note on the page https://studies.cs.helsinki.fi/exampleapp/notes 
 ```mermaid
 sequenceDiagram
@@ -39,7 +39,8 @@ sequenceDiagram
     deactivate server
 ```
 
-# 0.5: Single page app diagram
+# Single page app diagram `0.5`
+The situation where the user goes to the single-page app version of the notes app at https://studies.cs.helsinki.fi/exampleapp/spa.
 
 ```mermaid
 sequenceDiagram
@@ -71,7 +72,8 @@ sequenceDiagram
     Note right of browser: The browser executes the callback function that renders the notes 
 
 ```
-# 0.6: New note in Single page app diagram
+# New note in Single page app diagram `0.6`
+The situation where the user creates a new note using the single-page version of the app.
 ```mermaid
 sequenceDiagram
     participant browser
