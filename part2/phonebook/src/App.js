@@ -10,18 +10,30 @@ const App = () => {
     setNewName(event.target.value)
   }
 
+  const isNameAlreadyAdded = name => {
+    return persons.some(person => person.name === name)
+  }
+
   const onFormSubmit = event => {
     event.preventDefault();
 
-    const person = {
-      name: newName
+    if(isNameAlreadyAdded(newName)){
+
+      alert(`${newName} is already added to phonebook`)
+
+    } else {
+
+      const person = {
+        name: newName
+      }
+  
+      // add new person
+      setPersons(persons.concat(person))
+  
+      // clear input value
+      setNewName('')
     }
 
-    // add new person
-    setPersons(persons.concat(person))
-
-    // clear input value
-    setNewName('')
   }
 
   return (
