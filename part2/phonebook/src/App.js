@@ -1,29 +1,9 @@
 import { useState, useEffect } from 'react'
 import service from './services/persons'
 
-
-// components
-const SearchFilter = ({ onSearchChange, newSearch }) => {
-  return <div>filter shown with: <input onChange={onSearchChange} value={newSearch} /></div>
-}
-
-const NamesForm = ({ onFormSubmit, onNameChange, newName, onNumberChange, newNumber }) => {
-  return (
-    <form onSubmit={onFormSubmit}>
-      <div>name: <input onChange={onNameChange} value={newName} /></div>
-      <div>number: <input onChange={onNumberChange} value={newNumber} /></div>
-      <div><button type="submit">add</button></div>
-    </form>
-  )
-}
-
-const Persons = ({ people }) => {
-  return (
-    <ul>
-      {people.map(person => <li key={person.name}>{person.name + " " + person.number}</li>)}
-    </ul>
-  )
-}
+import NamesFilter from './components/NamesFilter'
+import AddNameForm from './components/AddNameForm'
+import Persons from './components/Persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -33,13 +13,9 @@ const App = () => {
   const [newSearch, setNewSearch] = useState('')
 
   useEffect(() => {
-    console.log('effect')
-
     service.getPeople().then(response => {
-      console.log('getPeople fulfilled', response);
       setPersons(response.data)
     })
-
   }, [])
 
   // helpers
@@ -69,7 +45,7 @@ const App = () => {
         console.log('add data to the server response', response)
 
         // add new person
-        setPersons(persons.concat(newPerson))
+        setPersons(persons.concat(response.data))
 
         // clear input value
         setNewName('')
@@ -84,12 +60,21 @@ const App = () => {
 
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase()))
 
+  // delete name function
+  const deletePerson = person => {
+    if (window.confirm(`Are you sure you want to delete ${person.name} ?`)) {
+      service.deletePerson(person).then(() => {
+        setPersons(persons.filter(p => p.id !== person.id))
+      })
+    }
+  }
+
   return (
     <div>
       <h1>Phonebook</h1>
-      <SearchFilter onSearchChange={onSearchChange} newSearch={newSearch} />
+      <NamesFilter onSearchChange={onSearchChange} newSearch={newSearch} />
       <h2>Add new name</h2>
-      <NamesForm
+      <AddNameForm
         onFormSubmit={onFormSubmit}
         onNameChange={onNameChange}
         newName={newName}
@@ -97,7 +82,7 @@ const App = () => {
         newNumber={newNumber}
       />
       <h2>Numbers</h2>
-      <Persons people={personsToShow} />
+      <Persons people={personsToShow} deletePerson={deletePerson} />
     </div>
   )
 }
