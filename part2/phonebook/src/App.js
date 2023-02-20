@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import service from './services/persons'
 
 
 // components
@@ -34,14 +34,14 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled', response);
-        setPersons(response.data)
-      })
+
+    service.getPeople().then(response => {
+      console.log('getPeople fulfilled', response);
+      setPersons(response.data)
+    })
+
   }, [])
-  
+
   // helpers
   const isNameAlreadyAdded = name => persons.some(person => person.name === name)
 
@@ -64,18 +64,19 @@ const App = () => {
       }
 
       // add data to the server
-      axios
-      .post('http://localhost:3001/persons', newPerson)
-      .then(response => {
+      service.create(newPerson).then(response => {
+
         console.log('add data to the server response', response)
+
+        // add new person
+        setPersons(persons.concat(newPerson))
+
+        // clear input value
+        setNewName('')
+        setNewNumber('')
       })
 
-      // add new person
-      setPersons(persons.concat(newPerson))
 
-      // clear input value
-      setNewName('')
-      setNewNumber('')
 
     }
 
