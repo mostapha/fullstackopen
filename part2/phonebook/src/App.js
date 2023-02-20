@@ -58,17 +58,25 @@ const App = () => {
 
     } else {
 
-      const person = {
+      const newPerson = {
         name: newName,
         number: newNumber
       }
 
+      // add data to the server
+      axios
+      .post('http://localhost:3001/persons', newPerson)
+      .then(response => {
+        console.log('add data to the server response', response)
+      })
+
       // add new person
-      setPersons(persons.concat(person))
+      setPersons(persons.concat(newPerson))
 
       // clear input value
       setNewName('')
       setNewNumber('')
+
     }
 
   }
