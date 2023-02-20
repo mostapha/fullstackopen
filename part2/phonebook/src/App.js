@@ -11,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [notification, setNotification] = useState(undefined)
 
   useEffect(() => {
     service.getPeople().then(response => {
@@ -38,7 +39,7 @@ const App = () => {
 
       } else {
 
-        
+
         if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
 
           const updatedName = {
@@ -47,6 +48,13 @@ const App = () => {
           }
 
           service.update(nameDuplicate.id, updatedName).then(response => {
+
+            setNotification({
+              type: 'modified',
+              text: `Number of ${nameDuplicate.name} has been updated`
+            })
+
+            setTimeout(() => setNotification(undefined), 3000)
 
             // update UI
             setPersons(
@@ -75,6 +83,13 @@ const App = () => {
         // add new person
         setPersons(persons.concat(response.data))
 
+        setNotification({
+          type: 'added',
+          text: `${response.data.name} has been added`
+        })
+
+        setTimeout(() => setNotification(undefined), 3000)
+
         // clear input value
         setNewName('')
         setNewNumber('')
@@ -91,6 +106,14 @@ const App = () => {
     if (window.confirm(`Are you sure you want to delete ${person.name} ?`)) {
       service.deletePerson(person).then(() => {
         setPersons(persons.filter(p => p.id !== person.id))
+
+        setNotification({
+          type: 'deleted',
+          text: `${person.name} has been deleted`
+        })
+
+        setTimeout(() => setNotification(undefined), 3000)
+    
       })
     }
   }
@@ -98,7 +121,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <NamesFilter onSearchChange={onSearchChange} newSearch={newSearch} />
+      <NamesFilter onSearchChange={onSearchChange} newSearch={newSearch} notification={notification} />
       <h2>Add new name</h2>
       <AddNameForm
         onFormSubmit={onFormSubmit}
