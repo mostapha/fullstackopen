@@ -18,9 +18,6 @@ const App = () => {
     })
   }, [])
 
-  // helpers
-  const isNameAlreadyAdded = name => persons.some(person => person.name === name)
-
   // events
   const onSearchChange = event => setNewSearch(event.target.value)
   const onNameChange = event => setNewName(event.target.value)
@@ -28,9 +25,42 @@ const App = () => {
   const onFormSubmit = event => {
     event.preventDefault();
 
-    if (isNameAlreadyAdded(newName)) {
+    const nameDuplicate = persons.find(person => person.name === newName);
 
-      alert(`${newName} is already added to phonebook`)
+    // check if name is duplicated
+    if (nameDuplicate) {
+
+      const isSameNumber = nameDuplicate.number === newNumber
+
+      // check if the duplicated name has the same number
+      if (isSameNumber) {
+        alert(`${newName} is already added to phonebook`)
+
+      } else {
+
+        
+        if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+
+          const updatedName = {
+            ...nameDuplicate,
+            number: newNumber
+          }
+
+          service.update(nameDuplicate.id, updatedName).then(response => {
+
+            // update UI
+            setPersons(
+              persons.map(p => {
+                return p.id === nameDuplicate.id ? response.data : p
+              })
+            )
+
+            setNewName('');
+            setNewNumber('')
+          })
+
+        }
+      }
 
     } else {
 
@@ -42,8 +72,6 @@ const App = () => {
       // add data to the server
       service.create(newPerson).then(response => {
 
-        console.log('add data to the server response', response)
-
         // add new person
         setPersons(persons.concat(response.data))
 
@@ -51,8 +79,6 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
-
-
 
     }
 
