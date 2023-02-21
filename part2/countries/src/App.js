@@ -1,14 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import service from "./service/api"
 
 
-const CountryViewer = () => {
+const WeatherInfo = ({ latlng }) => {
+  const [weather, setWeather] = useState(null);
+
+  const [lat, lng] = latlng;
+
+  useEffect(() => {
+    service.getWeather(lat, lng).then(response => {
+      setWeather(response.data)
+    })
+
+  }, [lat, lng])
+
+  return weather
+    ? (
+      <>
+        <div>Temperature {weather.main.temp} Celcius</div>
+        <div><img src={"https://openweathermap.org/img/wn/" + weather.weather[0].icon + "@2x.png"} alt={weather.weather[0].icon}/></div>
+        <div>wind {weather.wind.speed} m/s</div>
+      </>
+    )
+    : (<div>Fetching data...</div>)
+
+
 
 }
 
 const TableRow = ({ keyName, value }) => {
   return <tr><th>{keyName}</th><td>{value}</td></tr>
 }
+
 const SearchResults = ({ countries, showCountry }) => {
 
   if (countries === null) {
@@ -27,7 +50,7 @@ const SearchResults = ({ countries, showCountry }) => {
         <table>
           <tbody>
             <TableRow keyName="alternative spelling" value={country.altSpellings.join(', ')} />
-            <TableRow keyName="Capital" value={country.capital[0]} />
+            <TableRow keyName="Capital" value={country.capital.join(', ')} />
             <TableRow keyName="Population" value={country.population} />
             <TableRow keyName="Continents" value={country.continents.join(', ')} />
             <TableRow keyName="Languages" value={(
@@ -41,11 +64,13 @@ const SearchResults = ({ countries, showCountry }) => {
             )} />
             <TableRow keyName="Flag" value={
               (
-                <img src={country.flags.svg} />
+                <img src={country.flags.svg} alt={country.flag} />
               )
             } />
           </tbody>
         </table>
+        <h2>Weather in {country.capital[0]}</h2>
+        <WeatherInfo latlng={country.capitalInfo.latlng} />
       </div>
     )
 
@@ -60,6 +85,7 @@ const SearchResults = ({ countries, showCountry }) => {
 
 
 }
+
 const App = () => {
   const [countryName, setCountryName] = useState("");
   const [countries, setCountries] = useState(null);
