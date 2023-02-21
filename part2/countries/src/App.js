@@ -2,11 +2,14 @@ import { useState } from "react";
 import service from "./service/api"
 
 
+const CountryViewer = () => {
+
+}
 
 const TableRow = ({ keyName, value }) => {
   return <tr><th>{keyName}</th><td>{value}</td></tr>
 }
-const SearchResults = ({ countries }) => {
+const SearchResults = ({ countries, showCountry }) => {
 
   if (countries === null) {
     return ("")
@@ -49,7 +52,7 @@ const SearchResults = ({ countries }) => {
   } else {
     return (
       <ul>
-        {countries.map(country => <li key={country.ccn3}>{country.name.common}</li>)}
+        {countries.map(country => <li key={country.ccn3}>{country.name.common}<button onClick={() => showCountry(country)}>show</button></li>)}
       </ul>
     )
   }
@@ -65,22 +68,28 @@ const App = () => {
     setCountries(countries)
   }
 
-  const handleFormSubmit = event => {
-    event.preventDefault();
-
-    if (countryName.trim() !== "") {
-      service.search(countryName).then(response => {
+  const triggerSearch = (query) => {
+    if (query.trim() !== "") {
+      service.search(query).then(response => {
         handleData(response.data)
       }).catch(err => {
         if (err.response.status === 404) {
-          alert('no search results for ' + countryName)
+          alert('no search results for ' + query)
         } else {
           console.error(err);
         }
       })
-
     }
+  }
 
+  const handleFormSubmit = event => {
+    event.preventDefault();
+    triggerSearch(countryName);
+  }
+
+  const showCountry = (countryInfo) => {
+    setCountryName(countryInfo.name.common)
+    triggerSearch(countryInfo.name.common);
   }
 
   return (
@@ -89,7 +98,7 @@ const App = () => {
         <label htmlFor='query'>find countries</label>
         <input id='query' onChange={event => setCountryName(event.target.value)} value={countryName} />
       </form>
-      <SearchResults countries={countries} />
+      <SearchResults countries={countries} showCountry={showCountry} />
     </div>
   );
 }
