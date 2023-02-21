@@ -50,11 +50,11 @@ const App = () => {
           service.update(nameDuplicate.id, updatedName).then(response => {
 
             setNotification({
-              type: 'modified',
+              type: 'success',
               text: `Number of ${nameDuplicate.name} has been updated`
             })
 
-            setTimeout(() => setNotification(undefined), 3000)
+            setTimeout(() => setNotification(undefined), 5000)
 
             // update UI
             setPersons(
@@ -65,6 +65,14 @@ const App = () => {
 
             setNewName('');
             setNewNumber('')
+          }).catch(err => {
+            if (err.response.status === 404) {
+              setNotification({
+                type: "error",
+                text: `${nameDuplicate.name} has already been removed from the server`
+              })
+              setTimeout(() => setNotification(undefined), 5000)
+            } else console.error(err);
           })
 
         }
@@ -84,11 +92,10 @@ const App = () => {
         setPersons(persons.concat(response.data))
 
         setNotification({
-          type: 'added',
+          type: 'success',
           text: `${response.data.name} has been added`
         })
-
-        setTimeout(() => setNotification(undefined), 3000)
+        setTimeout(() => setNotification(undefined), 5000)
 
         // clear input value
         setNewName('')
@@ -108,12 +115,12 @@ const App = () => {
         setPersons(persons.filter(p => p.id !== person.id))
 
         setNotification({
-          type: 'deleted',
+          type: 'success',
           text: `${person.name} has been deleted`
         })
 
-        setTimeout(() => setNotification(undefined), 3000)
-    
+        setTimeout(() => setNotification(undefined), 5000)
+
       })
     }
   }

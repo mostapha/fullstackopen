@@ -1,18 +1,13 @@
 const notificationStyles = {
-    added: {
-        color: "blue",
-        background: "#f1f1ff",
-        borderColor: "#d8d8ff"
-    },
-    modified: {
-        color: "#427042",
-        background: "#f0fff0",
-        borderColor: "#bdcfa8"
-    },
-    deleted: {
+    success: {
         color: "#00423c",
         background: "#e3fbe4",
         borderColor: "#c9fd8c"
+    },
+    error: {
+        color: "#930000",
+        background: "#ffecec",
+        borderColor: "#bb0d00"
     }
 }
 
